@@ -4,8 +4,8 @@
 #include <QThread>
 #include<QDebug>
 //#include "work.h"
-#include "myline.h"
-#include "node.h"
+
+
 #include <QMouseEvent>
 //#include "vars.h"
 int nodes_N=340;
@@ -13,8 +13,7 @@ int lines_N=5;
 float f;
 QTimer *timer;
 //work* WK;
-myLine* ML;
-node* _node;
+
 
 
 Dialog::Dialog(QWidget *parent) :
