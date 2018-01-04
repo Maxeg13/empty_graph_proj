@@ -9,7 +9,7 @@
 
 #include <QMouseEvent>
 //#include "vars.h"
-int bufShowSize=3000;
+int bufShowSize=100;
 int nodes_N=340;
 int lines_N=5;
 float f;

@@ -24,12 +24,14 @@ void myCurve::signalDrawing(float x)
 {
     // Добавить точки на ранее созданную кривую
     QPolygonF points;
+    int s=data.size();
     data[ind_c]=x;
     ind_c++;
+    ind_c%=s;
 
     for (int i=0;i<data.size();i++)
     {
-        points<<QPointF(i,data[(ind_c+i+1)%data.size()]);
+        points<<QPointF(i,data[(ind_c+i+1)%s]);
     }
     setSamples( points ); // ассоциировать набор точек с кривой
     attach( d_plot); // отобразить кривую на графике
