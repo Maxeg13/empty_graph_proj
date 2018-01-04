@@ -1,5 +1,5 @@
 #include "drawing.h"
-#include "dialog.h"
+#include "MainWindow.h"
 #include <QPainter>
 #include <QTimer>
 #include <QThread>
@@ -12,12 +12,13 @@
 
 #include <QMouseEvent>
 //#include "vars.h"
-int bufShowSize=100;
+int bufShowSize=3000;
 int nodes_N=340;
 int lines_N=5;
 float f;
 Serial hSerial;
 QLineEdit* LE;
+QThread* thread;
 QTimer *timer;
 QwtPlot* vibro_plot;
 myCurve* vibroCurve;
@@ -25,8 +26,8 @@ myCurve* vibroCurve;
 
 
 
-Dialog::Dialog(QWidget *parent) :
-    QDialog(parent)
+MainWindow::MainWindow(QWidget *parent) :
+    QMainWindow(parent)
 {
 
 
@@ -36,14 +37,18 @@ Dialog::Dialog(QWidget *parent) :
 //    string str1=qstr.toUtf8().constData();
 //    wstring str(str1.begin(),str1.end());
 //    hSerial.InitCOM(str.c_str());
-    SO=new serial_obj(qstr);
-    SO->doWork();
+
+
 
     int frame_width=4;
     QGridLayout* GL=new QGridLayout();
+    GL->addWidget(LE,0/frame_width,0%frame_width);
+
     QWidget *centralWidget1=new QWidget();
     centralWidget1->setLayout(GL);
-    GL->addWidget(LE,0/frame_width,0%frame_width);
+    setCentralWidget(centralWidget1);
+
+
 //    ser_on=1;
 
 
@@ -55,32 +60,33 @@ Dialog::Dialog(QWidget *parent) :
     connect(timer, SIGNAL(timeout()), this, SLOT(drawing()));
     timer->start(40);
     this->update();
-    //    QThread* thread = new QThread( );
-    //    WK=new work();
-    //    WK->moveToThread(thread);
-    //    connect(thread,SIGNAL(started()),WK,SLOT(doWork()));
-    //    thread->start();
+
+    SO=new serial_obj(qstr, vibroCurve);
+    QThread* thread = new QThread( );
+    SO->moveToThread(thread);
+    connect(thread,SIGNAL(started()),SO,SLOT(doWork()));
+    thread->start();
 
 }
 
-void Dialog::drawing()
+void MainWindow::drawing()
 {
     this->update();
 }
 
-void Dialog::mousePressEvent(QMouseEvent *)
+void MainWindow::mousePressEvent(QMouseEvent *)
 {
 
 }
 
-void Dialog::mainCircle()
+void MainWindow::mainCircle()
 {
 
 
 
 }
 
-void Dialog::paintEvent(QPaintEvent* e)
+void MainWindow::paintEvent(QPaintEvent* e)
 {
     static float t=1;
     t+=.06;
@@ -94,7 +100,7 @@ void Dialog::paintEvent(QPaintEvent* e)
     painter->setPen(pen);
     painter->scale(1.5,1.5);
 
-    vibroCurve->signalDrawing(t);
+    vibroCurve->signalDrawing();
 //    for(int j=0;j<lines_N;j++)
 //        painter->drawLine(ML[j].x[0],ML[j].y[0],ML[j].x[1],ML[j].y[1]);
 
@@ -110,12 +116,12 @@ void Dialog::paintEvent(QPaintEvent* e)
     delete painter;
 }
 
-Dialog::~Dialog()
+MainWindow::~MainWindow()
 {
 
 }
 
-void Dialog::drawingInit(QwtPlot* d_plot, QString title)
+void MainWindow::drawingInit(QwtPlot* d_plot, QString title)
 {
 
     //        setCentralWidget(MW);
@@ -171,6 +177,6 @@ void Dialog::drawingInit(QwtPlot* d_plot, QString title)
     //    grid->attach( d_plot ); // добавить сетку к полю графика
 
 
-    d_plot->setMinimumSize(150,140);
+    d_plot->setMinimumSize(250,180);
 
 }

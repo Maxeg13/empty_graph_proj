@@ -14,14 +14,14 @@ INCLUDEPATH += C:/QWT/include
 LIBS += -LC:/QWT/lib -lqwt
 
 SOURCES += main.cpp\
-        dialog.cpp \
     work.cpp \
     drawing.cpp \
     serial.cpp \
     stdafx.cpp \
-    serialqobj.cpp
+    serialqobj.cpp \
+    mainwindow.cpp
 
-HEADERS  += dialog.h \
+HEADERS  += \
     work.h \
     drawing.h \
     node.h \
@@ -29,7 +29,8 @@ HEADERS  += dialog.h \
     serial.h \
     stdafx.h \
     targetver.h \
-    serialqobj.h
+    serialqobj.h \
+    mainwindow.h
 
 DISTFILES += \
 

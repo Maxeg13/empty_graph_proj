@@ -1,8 +1,8 @@
 #include "serialqobj.h"
 
-serial_obj::serial_obj(QString qstr)
+serial_obj::serial_obj(QString qstr, myCurve* _MC)
 {
-
+    MC=_MC;
     std::string str1=qstr.toUtf8().constData();
     std::wstring str(str1.begin(),str1.end());
 
@@ -36,6 +36,9 @@ void serial_obj::doWork()
         bool readVarON;
         readVar=(int8_t)hSerial.ReadCOM(readVarON);
         if(readVarON)
-            qDebug()<<(int8_t)readVar;
+        {
+            MC->dataRefresh((int8_t)readVar);
+        }
+//            qDebug()<<(int8_t)readVar;
     }
 }

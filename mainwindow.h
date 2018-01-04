@@ -1,19 +1,19 @@
-#ifndef DIALOG_H
-#define DIALOG_H
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
 #include "headers.h"
-#include <QDialog>
+#include <QMainWindow>
 #include "serialqobj.h"
 
 
-class Dialog : public QDialog
+class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
     void drawingInit(QwtPlot* d_plot, QString title);
     void mousePressEvent(QMouseEvent *);
-    explicit Dialog(QWidget *parent = 0);
-    ~Dialog();
+    explicit MainWindow(QWidget *parent = 0);
+    ~MainWindow();
     //    paintEvent(QPaintEvent*);
     void mainCircle();
     serial_obj* SO;
@@ -25,4 +25,4 @@ public slots:
 
 };
 
-#endif // DIALOG_H
+#endif // MainWindow_H

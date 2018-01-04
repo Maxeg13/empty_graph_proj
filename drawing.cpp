@@ -20,14 +20,21 @@ myCurve::myCurve(int bufShowSize,QwtPlot* d_plotH,const QString &title,
     }
 }
 
-void myCurve::signalDrawing(float x)
+void myCurve::dataRefresh(float x)
 {
-    // Добавить точки на ранее созданную кривую
-    QPolygonF points;
     int s=data.size();
     data[ind_c]=x;
     ind_c++;
     ind_c%=s;
+}
+
+void myCurve::signalDrawing()
+{
+    // Добавить точки на ранее созданную кривую
+    int s=data.size();
+
+    QPolygonF points;
+
 
     for (int i=0;i<data.size();i++)
     {

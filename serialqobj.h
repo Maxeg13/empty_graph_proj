@@ -3,6 +3,7 @@
 #include "headers.h"
 //#include "stand_dev.h"
 #include "serial.h"
+#include "drawing.h"
 class serial_obj : public QObject
 {
     Q_OBJECT
@@ -10,7 +11,7 @@ public:
     Serial hSerial;
     int* ind_c;
     int8_t EMG_I;
-
+    myCurve* MC;
 //    standartDev STD[2];
 //    frBuHp2 FBH[2];
 //    //bandPassFr BPF[2];
@@ -28,7 +29,7 @@ public:
 //    std::vector <std::vector <std::vector<float>>>& featureEMG;
 //    std::vector<float> featureOut;
     int ptr;
-    serial_obj(QString);
+    serial_obj(QString, myCurve *);
     void init(QString);
     ~serial_obj();
     void close();
