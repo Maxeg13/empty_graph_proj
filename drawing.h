@@ -8,14 +8,14 @@ class myCurve:public QwtPlotCurve
 {
 public:
 
-    vector<float> &data;
+    vector<float> data;
     QwtPlot* d_plot;
     QwtSymbol *symbol;
-    int& ind_c;
+    int ind_c;
 
-    myCurve(int bufShowSize, vector<float> &dataH,QwtPlot* d_plotH,const QString &title,
-            const QColor &color, const QColor &colorSymbol,int& ind_ch );
-    void signalDrawing();
+    myCurve(int bufShowSize, QwtPlot* d_plotH, const QString &title,
+            const QColor &color, const QColor &colorSymbol);
+    void signalDrawing(float x);
     void pointDrawing(float , float);
     void set_Drawing(vector<float> &x, vector<float> &y, int);
 };

@@ -1,3 +1,4 @@
+#include "drawing.h"
 #include "dialog.h"
 #include <QPainter>
 #include <QTimer>
@@ -8,10 +9,13 @@
 
 #include <QMouseEvent>
 //#include "vars.h"
+int bufShowSize=3000;
 int nodes_N=340;
 int lines_N=5;
 float f;
 QTimer *timer;
+QwtPlot* vibro_plot;
+myCurve* vibroCurve;
 //work* WK;
 
 
@@ -19,6 +23,10 @@ QTimer *timer;
 Dialog::Dialog(QWidget *parent) :
     QDialog(parent)
 {
+    vibro_plot=new QwtPlot;
+    drawingInit(vibro_plot,QString("vibro value"));
+    vibroCurve=new myCurve(bufShowSize,vibro_plot,"perc out", Qt::black, Qt::black);
+    vibro_plot->show();
     timer=new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(drawing()));
     timer->start(40);
@@ -62,6 +70,7 @@ void Dialog::paintEvent(QPaintEvent* e)
     painter->setPen(pen);
     painter->scale(1.5,1.5);
 
+    vibroCurve->signalDrawing(t);
 //    for(int j=0;j<lines_N;j++)
 //        painter->drawLine(ML[j].x[0],ML[j].y[0],ML[j].x[1],ML[j].y[1]);
 

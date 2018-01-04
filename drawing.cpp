@@ -4,26 +4,28 @@
 
 
 
-myCurve::myCurve(int bufShowSize, std::vector<float> &dataH,QwtPlot* d_plotH,const QString &title,
-                 const QColor &color, const QColor &colorSymbol,int& ind_ch ):
-    data(dataH),ind_c(ind_ch)
+myCurve::myCurve(int bufShowSize,QwtPlot* d_plotH,const QString &title,
+                 const QColor &color, const QColor &colorSymbol )
+
 {
     d_plot=d_plotH;
     setTitle(title);
     setPen(color,2);
 
 
-    dataH.resize(bufShowSize);
-    for(int i=0;i<dataH.size();i++)
+    data.resize(bufShowSize);
+    for(int i=0;i<data.size();i++)
     {
-        dataH[i ]=cos(i/4.);
+        data[i ]=0;
     }
 }
 
-void myCurve::signalDrawing()
+void myCurve::signalDrawing(float x)
 {
     // Добавить точки на ранее созданную кривую
     QPolygonF points;
+    data[ind_c]=x;
+    ind_c++;
 
     for (int i=0;i<data.size();i++)
     {
