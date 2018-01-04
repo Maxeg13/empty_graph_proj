@@ -16,13 +16,20 @@ LIBS += -LC:/QWT/lib -lqwt
 SOURCES += main.cpp\
         dialog.cpp \
     work.cpp \
-    drawing.cpp
+    drawing.cpp \
+    serial.cpp \
+    stdafx.cpp \
+    serialqobj.cpp
 
 HEADERS  += dialog.h \
     work.h \
     drawing.h \
     node.h \
-    headers.h
+    headers.h \
+    serial.h \
+    stdafx.h \
+    targetver.h \
+    serialqobj.h
 
 DISTFILES += \
 

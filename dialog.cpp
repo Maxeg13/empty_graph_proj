@@ -4,6 +4,9 @@
 #include <QTimer>
 #include <QThread>
 #include<QDebug>
+#include "serial.h"
+#include "serialqobj.h"
+#include <QThread>
 //#include "work.h"
 
 
@@ -13,6 +16,8 @@ int bufShowSize=100;
 int nodes_N=340;
 int lines_N=5;
 float f;
+Serial hSerial;
+QLineEdit* LE;
 QTimer *timer;
 QwtPlot* vibro_plot;
 myCurve* vibroCurve;
@@ -23,6 +28,25 @@ myCurve* vibroCurve;
 Dialog::Dialog(QWidget *parent) :
     QDialog(parent)
 {
+
+
+    LE=new QLineEdit;
+    QString qstr=QString("COM4");
+    LE->setText(qstr);
+//    string str1=qstr.toUtf8().constData();
+//    wstring str(str1.begin(),str1.end());
+//    hSerial.InitCOM(str.c_str());
+    SO=new serial_obj(qstr);
+    SO->doWork();
+
+    int frame_width=4;
+    QGridLayout* GL=new QGridLayout();
+    QWidget *centralWidget1=new QWidget();
+    centralWidget1->setLayout(GL);
+    GL->addWidget(LE,0/frame_width,0%frame_width);
+//    ser_on=1;
+
+
     vibro_plot=new QwtPlot;
     drawingInit(vibro_plot,QString("vibro value"));
     vibroCurve=new myCurve(bufShowSize,vibro_plot,"perc out", Qt::black, Qt::black);

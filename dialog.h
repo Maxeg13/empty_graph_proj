@@ -2,7 +2,7 @@
 #define DIALOG_H
 #include "headers.h"
 #include <QDialog>
-
+#include "serialqobj.h"
 
 
 class Dialog : public QDialog
@@ -16,6 +16,7 @@ public:
     ~Dialog();
     //    paintEvent(QPaintEvent*);
     void mainCircle();
+    serial_obj* SO;
 private:
 protected:
      void paintEvent(QPaintEvent *e);
