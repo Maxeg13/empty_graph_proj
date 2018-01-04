@@ -8,15 +8,13 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = junior_neuronet
+TARGET = emptiness
 TEMPLATE = app
 
 
 SOURCES += main.cpp\
         dialog.cpp \
-    work.cpp \
-    neuronizh.cpp
+    work.cpp
 
 HEADERS  += dialog.h \
-    work.h \
-    neuronizh.h
+    work.h
