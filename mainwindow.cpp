@@ -1,27 +1,25 @@
-#include "drawing.h"
+//use QT_perfusion.ino file
+
 #include "MainWindow.h"
-#include <QPainter>
 #include <QTimer>
-#include <QThread>
 #include<QDebug>
 #include "serial.h"
-#include "serialqobj.h"
-#include <QThread>
-//#include "work.h"
-
-
 #include <QMouseEvent>
+#include <QPushButton>
+#include "QSignalMapper"
+
 //#include "vars.h"
 int bufShowSize=3000;
 int nodes_N=340;
 int lines_N=5;
 float f;
 Serial hSerial;
-QLineEdit* LE;
-QThread* thread;
+QPushButton* ON_BTN;
+QPushButton* return_BTN;
 QTimer *timer;
-QwtPlot* vibro_plot;
-myCurve* vibroCurve;
+QString qstr;
+bool on=1;
+uint8_t sendVal=1;
 //work* WK;
 
 
@@ -29,44 +27,80 @@ myCurve* vibroCurve;
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
 {
+    QSignalMapper* signalMapper = new QSignalMapper(this);
+    connect(signalMapper, SIGNAL(mapped(int)),
+            this, SLOT(buttonClicked(int)));
 
+    ON_BTN=new QPushButton("on");
 
-    LE=new QLineEdit;
-    QString qstr=QString("COM4");
-    LE->setText(qstr);
-//    string str1=qstr.toUtf8().constData();
-//    wstring str(str1.begin(),str1.end());
-//    hSerial.InitCOM(str.c_str());
+    connect(ON_BTN, SIGNAL(clicked()),
+            signalMapper,         SLOT(map()));
+    signalMapper->setMapping(ON_BTN, 4);
 
+    return_BTN=new QPushButton("return");
 
+    connect(return_BTN, SIGNAL(clicked()),
+            signalMapper,         SLOT(map()));
+    signalMapper->setMapping(return_BTN, 6);
+
+    LE_COM=new QLineEdit;
+    LE_speed=new QLineEdit;
+    LE_speed->setText(QString("Fluid flow [mkl/sec]: 0.05"));
+
+    qstr=QString("COM8");
+    LE_COM->setText(qstr);
 
     int frame_width=4;
     QGridLayout* GL=new QGridLayout();
-    GL->addWidget(LE,0/frame_width,0%frame_width);
+    GL->addWidget(LE_COM,0/frame_width,0%frame_width);
+    GL->addWidget(LE_speed,0,1);
+    GL->addWidget(ON_BTN,1,0);
+    GL->addWidget(return_BTN,1,1);
+    ON_BTN->setMaximumWidth(30);
+    return_BTN->setMaximumWidth(70);
+    LE_speed->setMinimumWidth(200);
+
 
     QWidget *centralWidget1=new QWidget();
     centralWidget1->setLayout(GL);
     setCentralWidget(centralWidget1);
 
 
-//    ser_on=1;
-
-
-    vibro_plot=new QwtPlot;
-    drawingInit(vibro_plot,QString("vibro value"));
-    vibroCurve=new myCurve(bufShowSize,vibro_plot,"perc out", Qt::black, Qt::black);
-    vibro_plot->show();
     timer=new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(drawing()));
-    timer->start(40);
+
+    connect(LE_speed,SIGNAL(returnPressed()),this,SLOT(setSpeed()));
+    connect(ON_BTN,SIGNAL(released()),this,SLOT(turn()));
+    connect(this,SIGNAL( btn_sig(int)),this,SLOT(btn_slot(int)));
+    connect(LE_COM,SIGNAL(returnPressed()),this,SLOT(waitCOM_Subm()));
+    //    connect();
+    timer->start(100);
     this->update();
 
-    SO=new serial_obj(qstr, vibroCurve);
-    QThread* thread = new QThread( );
-    SO->moveToThread(thread);
-    connect(thread,SIGNAL(started()),SO,SLOT(doWork()));
-    thread->start();
+    setSpeed();
+}
 
+void MainWindow::buttonClicked(int i)
+{
+    switch(i)
+    {
+    case 4:
+
+        on=!on;
+        if(on)
+        {
+            ON_BTN->setText("on");
+            hSerial.write((uint8_t)(40));
+        }
+        else
+        {
+            ON_BTN->setText("off");
+            hSerial.write((uint8_t)(4));
+        }
+            break;
+    case 6:
+        hSerial.write((uint8_t)(6));
+        break;
+    }
 }
 
 void MainWindow::drawing()
@@ -74,109 +108,75 @@ void MainWindow::drawing()
     this->update();
 }
 
+
+
+void MainWindow::setSpeed()
+{
+//    qDebug()<<QString::number(0.1);
+    speed=LE_speed->text().remove(0,21).toFloat();
+    //    timer->start(100);
+    int I=24/speed;
+    float s2=24./I;
+    LE_speed->setText(LE_speed->text().remove(22,40)+QString::number(s2));
+    timer->setInterval(I);
+}
+
+void MainWindow::waitCOM_Subm()
+{
+    std::string str1=qstr.toUtf8().constData();
+    std::wstring str(str1.begin(),str1.end());
+    hSerial.InitCOM(str.c_str());//was L"COM5"
+
+    connect(timer, SIGNAL(timeout()), this, SLOT(send()));
+}
+
+void MainWindow::send()
+{
+
+//    if(on)
+    {
+
+        if(sendVal==1)
+            sendVal=0;
+        else
+            sendVal=1;
+        qDebug()<<"hello";
+        hSerial.write(sendVal);
+    }
+}
+
 void MainWindow::mousePressEvent(QMouseEvent *)
 {
 
 }
 
-void MainWindow::mainCircle()
-{
+//void MainWindow::mainCircLE_COM()
+//{
 
 
 
-}
+//}
 
 void MainWindow::paintEvent(QPaintEvent* e)
 {
-    static float t=1;
-    t+=.06;
-    if(t>10)t=10;
-    for (int i=0;i<t;i++)
-        mainCircle();
+    //    static float t=1;
+    //    t+=.06;
+    //    if(t>10)t=10;
+    //    for (int i=0;i<t;i++)
+    //        mainCircLE_COM();
 
-    QPainter* painter=new QPainter(this);
-    painter->setRenderHint(QPainter::Antialiasing, 1);
-    QPen pen(Qt::black, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-    painter->setPen(pen);
-    painter->scale(1.5,1.5);
-
-    vibroCurve->signalDrawing();
-//    for(int j=0;j<lines_N;j++)
-//        painter->drawLine(ML[j].x[0],ML[j].y[0],ML[j].x[1],ML[j].y[1]);
-
-//    pen=QPen(Qt::black, 4, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+    //    QPainter* painter=new QPainter(this);
+    //    painter->setRenderHint(QPainter::Antialiasing, 1);
+    //    QPen pen(Qt::black, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+    //    painter->setPen(pen);
+    //    painter->scaLE_COM(1.5,1.5);
 
 
-//    for(int j=0;j<nodes_N;j++)
-//    {
-//        pen.setColor(QColor(_node[j].clr[0],_node[j].clr[1],_node[j].clr[2]));
-//        painter->setPen(pen);
-//        painter->drawPoint(_node[j].x,_node[j].y);
-//    }
-    delete painter;
+
+    //    deLE_COMte painter;
 }
 
 MainWindow::~MainWindow()
 {
-
-}
-
-void MainWindow::drawingInit(QwtPlot* d_plot, QString title)
-{
-
-    //        setCentralWidget(MW);
-
-    //canvas().resize(925,342)
-    //    d_plot->canvas()->resize(100,150);
-    //d_plot->autoRefresh();
-    d_plot->setAutoReplot();
-    //_______232
-
-    // настройка функций
-    QwtPlotPicker *d_picker =
-            new QwtPlotPicker(
-                QwtPlot::xBottom, QwtPlot::yLeft, // ассоциация с осями
-                QwtPlotPicker::CrossRubberBand, // стиль перпендикулярных линий
-                QwtPicker::ActiveOnly, // включение/выключение
-                d_plot->canvas() ); // ассоциация с полем
-    // Цвет перпендикулярных линий
-    d_picker->setRubberBandPen( QColor( Qt::red ) );
-
-    // цвет координат положения указателя
-    d_picker->setTrackerPen( QColor( Qt::black ) );
-
-    // непосредственное включение вышеописанных функций
-    d_picker->setStateMachine( new QwtPickerDragPointMachine() );
-
-    // Включить возможность приближения/удаления графика
-    // #include <qwt_plot_magnifier.h>
-    QwtPlotMagnifier *magnifier = new QwtPlotMagnifier(d_plot->canvas());
-    // клавиша, активирующая приближение/удаление
-    magnifier->setMouseButton(Qt::MidButton);
-    // Включить возможность перемещения по графику
-    // #include <qwt_plot_panner.h>
-    QwtPlotPanner *d_panner = new QwtPlotPanner( d_plot->canvas() );
-    // клавиша, активирующая перемещение
-    d_panner->setMouseButton( Qt::RightButton );
-    // Включить отображение координат курсора и двух перпендикулярных
-    // линий в месте его отображения
-
-    QwtText* qwtt=new QwtText(title);
-    qwtt->setFont(QFont("Helvetica", 11,QFont::Normal));
-
-    d_plot->setAxisScale(1,-500,500,200);
-    d_plot->setTitle( *qwtt ); // заголовок
-    d_plot->setCanvasBackground( Qt::white ); // цвет фона
-
-
-    // Включить сетку
-    // #include <qwt_plot_grid.h>
-    //    QwtPlotGrid *grid = new QwtPlotGrid(); //
-
-    //    grid->setMajorPen(QPen( Qt::gray, 2 )); // цвет линий и толщина
-    //    grid->attach( d_plot ); // добавить сетку к полю графика
-
-
-    d_plot->setMinimumSize(250,180);
 
 }

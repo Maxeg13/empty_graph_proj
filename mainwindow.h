@@ -2,7 +2,6 @@
 #define MAINWINDOW_H
 #include "headers.h"
 #include <QMainWindow>
-#include "serialqobj.h"
 
 
 class MainWindow : public QMainWindow
@@ -10,18 +9,29 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    void drawingInit(QwtPlot* d_plot, QString title);
+    QLineEdit* LE_COM;
+    QLineEdit* LE_speed;
+    float speed;
+    bool subm;
+    Serial hSerial;
+    int readVar;
     void mousePressEvent(QMouseEvent *);
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     //    paintEvent(QPaintEvent*);
     void mainCircle();
-    serial_obj* SO;
+
 private:
 protected:
      void paintEvent(QPaintEvent *e);
 public slots:
+     void setSpeed();
+     void waitCOM_Subm();
+     void send();
      void drawing();
+     void buttonClicked(int);
+signals:
+//     void btn_sig(int);
 
 };
 

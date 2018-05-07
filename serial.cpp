@@ -31,7 +31,7 @@ void Serial::InitCOM(LPCTSTR sPortName)
      dwBytesWritten;
      ov;
 
-    BOOL iRet = WriteFile (hSerial,TEXT("H"),dwSize,&dwBytesWritten ,NULL);
+//    BOOL iRet = WriteFile (hSerial,TEXT("H"),dwSize,&dwBytesWritten ,NULL);
 }
 
 void Serial::write(char c)
