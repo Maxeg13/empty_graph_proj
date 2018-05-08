@@ -61,7 +61,7 @@ void MainWindow::setSpeed()
 
 void MainWindow::waitCOM_Subm()
 {
-    std::string str1=qstr.toUtf8().constData();
+    std::string str1=LE_COM->text().toUtf8().constData();
     std::wstring str(str1.begin(),str1.end());
     hSerial.InitCOM(str.c_str());//was L"COM5"
 
