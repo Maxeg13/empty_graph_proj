@@ -25,6 +25,7 @@ private:
 protected:
      void paintEvent(QPaintEvent *e);
 public slots:
+     void change_pict();
      void setSpeed();
      void waitCOM_Subm();
      void send();

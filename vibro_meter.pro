@@ -8,7 +8,7 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = vibro_meter
+TARGET = Perfusion VOVA 2000
 TEMPLATE = app
 
 SOURCES += main.cpp\
